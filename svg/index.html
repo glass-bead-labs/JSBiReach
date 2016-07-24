@@ -3,26 +3,36 @@
   <head>
     <meta charset="utf-8"/>
     <title>SVG tutorial</title>
+
+    <style type="text/css">
+      circle { fill: blue; r: 30; }
+      .out, .home { cy: 40%; }
+      .forward { cy: 20%; }
+      .left { cx: 35%; }
+      .left.out { cx: 15%; }
+      .right { cx: 65%; }
+      .right.out {cx: 85%; }
+    </style>
   </head>
   <body>
     <svg version="1.1"
         baseProfile="full"
-        width="800" height="200"
+        width="600" height="600"
         xmlns="http://www.w3.org/2000/svg">
 
         <rect width="100%" height="100%" fill="gray" />
 
         <!-- Left cluster - demo percentages work! -->
-        <circle cx="6.25%" cy="100" r="30" fill="blue" />
-        <circle cx="150" cy="50" r="30" fill="blue" />
-        <circle cx="150" cy="100" r="30" fill="blue" />
+        <circle class="left forward" />
+        <circle class="left out" />
+        <circle class="left home" />
         <!-- Right cluster -->
-        <circle cx="250" cy="50" r="30" fill="blue" />
-        <circle cx="250" cy="100" r="30" fill="blue" />
-        <circle cx="350" cy="100" r="30" fill="blue" />
+        <circle class="right forward" />
+        <circle class="right out" />
+        <circle class="right home" />
 
-        <text x="150" y="125" font-size="60" text-anchor="middle"
-        fill="white">SVG</text>
+        <text x="50%" y="75%" font-size="60" text-anchor="middle"
+        fill="white">SVG is so Cool</text>
     </svg>
   </body>
 </html>
