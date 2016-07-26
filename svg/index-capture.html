@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>SVG tutorial</title>
+
+    <style type="text/css">
+      svg {
+        display: block;
+        border: 1px solid #ccc;
+        position: absolute;
+        top:  5%;
+        left: 5%;
+        width:  90%;
+        height: 90%;
+        background: gray;
+      }
+
+      circle { fill: blue; /* r: 30; */ }
+      /* Two rows top-to-bottom */
+      /* .out, .home { cy: 40%; } */
+      /* .forward    { cy: 20%; } */
+      /* Four columsn left-to-right */
+      /* .left.out  { cx: 15%; } */
+      /* .left      { cx: 35%; } */
+      /* .right     { cx: 65%; } */
+      /* .right.out { cx: 85%; } */
+    </style>
+    <script>
+      function Interactor() {
+          // pointer lock event listener
+
+          // Hook pointer lock state change events for different browsers
+          document.addEventListener('pointerlockchange', this.lockChangeAlert,
+                  false);
+          // document.addEventListener('mozpointerlockchange', lockChangeAlert,
+          //         false);
+
+
+          // the fact that we'll need to grab references to essentially every
+          // element makes me think that a programmatic approach to SVG
+          // construction is probably the way to go...
+          this.workspace = document.getElementById('workspace');
+          // this.workspace.onclick = this.IOsetup;
+          this.workspace.onclick = function() {
+            // In the brain-melting world of JavaScript, this in a callback is
+            // the thing the function was attached to...
+            console.log(this);
+            this.requestPointerLock();
+          };
+          this.message = document.getElementById('message');
+
+          // Minor variation... can we get pointer lock on an SVG element?
+          // left_out = document.getElementsByClassName('left out')[0];
+          // left_out.onclick = function() {
+          //     left_out.requestPointerLock();
+          // }
+      }
+      Interactor.prototype.IOsetup = function() {
+          // Currently unused
+
+          // In the brain-melting world of JavaScript, this in a callback is
+          // the thing the function was attached to...
+          console.log(this);
+          this.requestPointerLock();
+      }
+      Interactor.prototype.lockChangeAlert = function () {
+          if(document.pointerLockElement === this.workspace) {
+              console.log('The pointer lock status is now locked');
+              document.addEventListener("mousemove", this.updateMsg, false);
+          } else {
+              console.log('The pointer lock status is now unlocked');
+              document.removeEventListener("mousemove", this.updateMsg,
+                      false);
+          }
+      }
+      Interactor.prototype.updateMsg = function(move_event) {
+          console.log(move_event);
+          this.message.textContent = "something";
+      }
+
+      // For now, we keep the interactor in the global namespace so I can 
+      // debug it more easily
+      function init() {
+          interact = new Interactor();
+      }
+    </script>
+  </head>
+  <body onload="init()">
+    <svg id="workspace"
+         version="1.1"
+         baseProfile="full"
+         xmlns="http://www.w3.org/2000/svg">
+
+        <!-- <rect width="100%" height="100%" fill="gray" /> -->
+
+        <!-- Left cluster -->
+        <circle class="left forward" cx="35%" cy="20%" r="4%" />
+        <circle class="left out" cx="15%" cy="40%" r="4%" />
+        <circle class="left home" cx="35%" cy="40%" r="4%" />
+        <!-- Right cluster -->
+        <circle class="right forward" cx="65%" cy="20%" r="4%" />
+        <circle class="right out" cx="85%" cy="40%" r="4%" />
+        <circle class="right home" cx="65%" cy="40%" r="4%" />
+
+        <text id="message" x="50%" y="75%" font-size="60"
+              text-anchor="middle" fill="white">
+          Touch anywhere to start
+        </text>
+    </svg>
+  </body>
+</html>
