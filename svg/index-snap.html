@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>SVG tutorial</title>
+    <script src="Snap.svg-0.4.1/dist/snap.svg-min.js"></script>
+    <style type="text/css">
+      svg {
+        display: block;
+        border: 1px solid #ccc;
+        position: absolute;
+        top:  5%;
+        left: 5%;
+        width:  90%;
+        height: 90%;
+        background: gray;
+      }
+
+      circle { fill: blue; r: 30; }
+      /* Two rows top-to-bottom */
+      .out, .home { cy: 40%; }
+      .forward    { cy: 20%; }
+      /* Four columsn left-to-right */
+      .left.out  { cx: 15%; }
+      .left      { cx: 35%; }
+      .right     { cx: 65%; }
+      .right.out { cx: 85%; }
+    </style>
+    <script>
+      init = function () {
+        workspace = document.getElementById('workspace');
+      }
+    </script>
+  </head>
+  <body onload="init()">
+    <svg id="workspace"
+         version="1.1"
+         baseProfile="full"
+         xmlns="http://www.w3.org/2000/svg">
+
+        <!-- <rect width="100%" height="100%" fill="gray" /> -->
+
+        <!-- Firefox won't let us use CSS to set cx, cy or r -->
+        <!-- Left cluster -->
+        <circle class="left forward" />
+        <circle class="left out" />
+        <circle class="left home" />
+        <!-- Right cluster -->
+        <circle class="right forward" />
+        <circle class="right out" />
+        <circle class="right home" />
+
+        <text x="50%" y="75%" font-size="60" text-anchor="middle"
+        fill="white">SVG is so Cool</text>
+    </svg>
+  </body>
+</html>
