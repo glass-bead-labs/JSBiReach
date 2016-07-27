@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>SVG tutorial</title>
+
+    <style type="text/css">
+      body { margin: 0; }
+      svg {
+        position: absolute;
+        top: 5%;
+        left: 5%;
+        display: block;
+        border: 1px solid #ccc;
+        position: absolute;
+        top:  5%;
+        left: 5%;
+        width:  90%;
+        height: 90%;
+        background: gray;
+      }
+
+      circle { fill: blue; /* r: 30; */ }
+      /* Two rows top-to-bottom */
+      /* .out, .home { cy: 40%; } */
+      /* .forward    { cy: 20%; } */
+      /* Four columsn left-to-right */
+      /* .left.out  { cx: 15%; } */
+      /* .left      { cx: 35%; } */
+      /* .right     { cx: 65%; } */
+      /* .right.out { cx: 85%; } */
+    </style>
+    <script src='http://d3js.org/d3.v3.min.js'></script>
+
+    <script type='text/javascript'>
+      function notrun() {
+        map.redraw = function() {
+        map.canvas.draw();
+        circle.attr('transform', map.svg.transform);
+        };
+        map.svg.transform =
+        function(d) {
+            return 'translate(' + x( d.x ) + ',' + y( d.y ) + ')';
+        };
+        /* FORCE */
+        var force =
+        d3.layout.force()
+            .gravity(0.05)
+            .charge( function(d, i) { return i ? 0 : -2000; } )
+            .nodes(map.nodes)
+            .size([map.width, map.height])
+            .start();
+        force.on('tick', function(e) {
+        var q = d3.geom.quadtree(map.nodes), i;
+        for (i = 1; i < map.nodes.length; ++i) {
+            q.visit( collide(map.nodes[i]) );
+        }
+        map.redraw();
+        });
+        function collide(node) {
+        var r = node.r + 16,
+            nx1 = node.x - r,
+            nx2 = node.x + r,
+            ny1 = node.y - r,
+            ny2 = node.y + r;
+        return function(quad, x1, y1, x2, y2) {
+            if (quad.point && (quad.point !== node)) {
+            var x = node.x - quad.point.x,
+                y = node.y - quad.point.y,
+                l = Math.sqrt(x * x + y * y),
+                r = node.r + quad.point.r;
+            if (l < r) {
+                l = (l - r) / l * 0.5;
+                node.x -= x *= l;
+                node.y -= y *= l;
+                quad.point.x += x;
+                quad.point.y += y;
+            }
+            }
+            return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+        };
+        }
+        /* LISTENERS */
+        function mousemove() {
+        var p = d3.mouse(this);
+        root.px = x.invert( p[0] );
+        root.py = y.invert( p[1] );
+        force.resume();
+        }
+        d3.select('body')
+        .on('mousemove', mousemove)
+        .call( d3.behavior.zoom().x( x ).y( y ).scaleExtent([1, 8]).on('zoom', map.redraw) );
+
+      // Dav's stuff for capturing mouse, etc.
+
+      function Interactor() {
+          // pointer lock event listener
+
+          // Hook pointer lock state change events for different browsers
+          document.addEventListener('pointerlockchange',
+                  // We bind 'this' so we can work more easily
+                  // We never want to unbind lockChangeAlert, so we're good
+                  this.lockChangeAlert.bind(this),
+                  false);
+          // document.addEventListener('mozpointerlockchange', lockChangeAlert,
+          //         false);
+
+
+          // the fact that we'll need to grab references to essentially every
+          // element makes me think that a programmatic approach to SVG
+          // construction is probably the way to go...
+          this.workspace = document.getElementById('workspace');
+          // this.workspace.onclick = this.IOsetup;
+          this.workspace.onclick = function() {
+            // In the brain-melting world of JavaScript, this in a callback is
+            // the thing the function was attached to... so here it's the
+            // SVG
+            this.requestPointerLock();
+          };
+          this.message = document.getElementById('message');
+
+          // Minor variation... can we get pointer lock on an SVG element?
+          // left_out = document.getElementsByClassName('left out')[0];
+          // left_out.onclick = function() {
+          //     left_out.requestPointerLock();
+          // }
+      }
+      Interactor.prototype.IOsetup = function() {
+          // Currently unused
+
+          // In the brain-melting world of JavaScript, this in a callback is
+          // the thing the function was attached to...
+          this.requestPointerLock();
+      }
+      Interactor.prototype.lockChangeAlert = function () {
+          // We use a modified update method so we retain access to our
+          // object methods
+          if(this.boundUpdate === undefined) {
+              this.boundUpdate = this.updateMsg.bind(this);
+          }
+
+          // Update whether we're listening to mousemove or not
+          if(document.pointerLockElement === this.workspace) {
+              console.log('The pointer lock status is now locked');
+              document.addEventListener("mousemove",
+                      this.boundUpdate, false);
+          }
+          else if(document.pointerLockElement === null) {
+              console.log('The pointer lock status is now unlocked');
+              document.removeEventListener("mousemove", this.boundUpdate,
+                      false);
+          }
+          else {
+              console.log('Pointer lock on:', document.pointerLockElement);
+          }
+      }
+      Interactor.prototype.updateMsg = function(move_event) {
+          console.log(move_event);
+          this.message.textContent =
+              move_event.clientX + ',' + move_event.clientY;
+      }
+
+      // For now, we keep the interactor in the global namespace so I can 
+      // debug it more easily
+      function init() {
+          interact = new Interactor();
+      }
+    } // notrun
+    </script>
+  </head>
+  <body>
+    <script type='text/javascript'>
+
+        /* SET UP ENV */
+        var map = {};
+        map.width = "90%";
+        map.height = "90%";
+        map.canvas =
+        d3.select('body')
+            .append('canvas')
+            .attr('width', map.width)
+            .attr('height', map.height)
+            .node().getContext('2d');
+        map.svg =
+        d3.select('body')
+            .append('svg')
+            .attr('width', map.width)
+            .attr('height', map.height)
+
+        map.left = map.svg.append('g');
+        map.right = map.svg.append('g');
+        // map.svg.append('rect')
+        // .attr('class', 'overlay')
+        // .attr('width', map.width)
+        // .attr('height', map.height);
+        /* PREPARE DATA and SCALES */
+        // map.canvas.nodes =
+        // d3.range(100).map(function(d, i) {
+        //     return {
+        //     x: Math.random() * map.width / 2,
+        //     y: Math.random() * map.height / 2,
+        //     r: Math.random() * 10 + 3
+        //     };
+        // });
+        map.svg.left = {
+            forward: {x: "35%", y: "20%", r: "4%"},
+            out:     {x: "15%", y: "40%", r: "4%"},
+            home:    {x: "35%", y: "40%", r: "4%"}
+        };
+
+        // need to append these as circles to the SVG g's
+
+        map.svg.right = {
+            forward: {x: "65%", y: "20%", r: "4%"},
+            out:     {x: "85%", y: "40%", r: "4%"},
+            home:    {x: "65%", y: "40%", r: "4%"}
+        }
+
+        // map.svg.nodes =
+        // d3.range(100).map(function(d, i) {
+        //     return {
+        //     x: Math.random() * map.width / 2,
+        //     y: Math.random() * map.height / 2,
+        //     r: Math.random() * 10 + 3
+        //     };
+        // });
+        // map.nodes = map.svg.nodes.concat( map.canvas.nodes );
+        // var root = map.nodes[0];
+        // root.r = 0;
+        // root.fixed = true;
+        var x =
+        d3.scale.linear()
+            .domain([0, map.width])
+            .range([0, map.width]);
+        var y =
+        d3.scale.linear()
+            .domain([0, map.height])
+            .range([map.height, 0]);
+        /* PLOT */
+        // map.canvas.draw =
+        // function() {
+        //     map.canvas.clearRect(0, 0, map.width, map.height);
+        //     map.canvas.beginPath();
+        //     var i = -1, cx, cy;
+        //     while (++i < map.canvas.nodes.length) {
+        //     d = map.canvas.nodes[i];
+        //     cx = x( d.x );
+        //     cy = y( d.y );
+        //     map.canvas.moveTo(cx, cy);
+        //     map.canvas.arc(cx, cy, d.r, 0, 2 * Math.PI);
+        //     }
+        //     map.canvas.fill();
+        // };
+        // map.svg.draw =
+        // function() {
+        //     circle = map.svg.selectAll('circle')
+        //     .data(map.svg.nodes).enter()
+        //     .append('circle')
+        //         .attr('r', function(d) { return d.r; })
+        //         .attr('fill', 'blue')
+        //         .attr('transform', map.svg.transform);
+        // };
+        // map.canvas.draw();
+        map.svg.draw();
+    </script>
+  </body>
+</html>
