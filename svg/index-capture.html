@@ -31,7 +31,10 @@
           // pointer lock event listener
 
           // Hook pointer lock state change events for different browsers
-          document.addEventListener('pointerlockchange', this.lockChangeAlert,
+          document.addEventListener('pointerlockchange',
+                  // We bind 'this' so we can work more easily
+                  // We never want to unbind lockChangeAlert, so we're good
+                  this.lockChangeAlert.bind(this),
                   false);
           // document.addEventListener('mozpointerlockchange', lockChangeAlert,
           //         false);
@@ -44,8 +47,8 @@
           // this.workspace.onclick = this.IOsetup;
           this.workspace.onclick = function() {
             // In the brain-melting world of JavaScript, this in a callback is
-            // the thing the function was attached to...
-            console.log(this);
+            // the thing the function was attached to... so here it's the
+            // SVG
             this.requestPointerLock();
           };
           this.message = document.getElementById('message');
@@ -61,22 +64,34 @@
 
           // In the brain-melting world of JavaScript, this in a callback is
           // the thing the function was attached to...
-          console.log(this);
           this.requestPointerLock();
       }
       Interactor.prototype.lockChangeAlert = function () {
+          // We use a modified update method so we retain access to our
+          // object methods
+          if(this.boundUpdate === undefined) {
+              this.boundUpdate = this.updateMsg.bind(this);
+          }
+
+          // Update whether we're listening to mousemove or not
           if(document.pointerLockElement === this.workspace) {
               console.log('The pointer lock status is now locked');
-              document.addEventListener("mousemove", this.updateMsg, false);
-          } else {
+              document.addEventListener("mousemove",
+                      this.boundUpdate, false);
+          }
+          else if(document.pointerLockElement === null) {
               console.log('The pointer lock status is now unlocked');
-              document.removeEventListener("mousemove", this.updateMsg,
+              document.removeEventListener("mousemove", this.boundUpdate,
                       false);
+          }
+          else {
+              console.log('Pointer lock on:', document.pointerLockElement);
           }
       }
       Interactor.prototype.updateMsg = function(move_event) {
           console.log(move_event);
-          this.message.textContent = "something";
+          this.message.textContent =
+              move_event.clientX + ',' + move_event.clientY;
       }
 
       // For now, we keep the interactor in the global namespace so I can 
