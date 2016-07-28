@@ -172,7 +172,7 @@
     <script type='text/javascript'>
 
         /* SET UP ENV */
-        var map = {};
+        map = {};
         map.width = "90%";
         map.height = "90%";
         map.canvas =
@@ -202,20 +202,35 @@
         //     r: Math.random() * 10 + 3
         //     };
         // });
-        map.svg.left = {
+        var pos_data =
+        { left: {
             forward: {x: "35%", y: "20%", r: "4%"},
             out:     {x: "15%", y: "40%", r: "4%"},
             home:    {x: "35%", y: "40%", r: "4%"}
-        };
-
-        // need to append these as circles to the SVG g's
-
-        map.svg.right = {
+            },
+         right: {
             forward: {x: "65%", y: "20%", r: "4%"},
             out:     {x: "85%", y: "40%", r: "4%"},
             home:    {x: "65%", y: "40%", r: "4%"}
+            }
+        };
+
+
+        for (var cluster in pos_data) {
+            var cluster_data = pos_data[cluster];
+
+            for (var rel_position in cluster_data) {
+                map.left[rel_position] = map.left.append('circle')
+                    .attr('cx', cluster_data[rel_position].x)
+                    .attr('cy', cluster_data[rel_position].y)
+                    .attr('r', cluster_data[rel_position].r);
+            }
         }
 
+        // The standard d3 appraoch is something like this, but our data above
+        // is not set up well for this... data here should be a list!
+        // map.left.selectAll('circle').data(map.leftdata).enter()
+        //     .append('circle').attr('r', 40);
         // map.svg.nodes =
         // d3.range(100).map(function(d, i) {
         //     return {
@@ -261,7 +276,7 @@
         //         .attr('transform', map.svg.transform);
         // };
         // map.canvas.draw();
-        map.svg.draw();
+        //map.svg.draw();
     </script>
   </body>
 </html>
