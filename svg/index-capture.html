@@ -19,7 +19,7 @@
       #targets circle {
           fill: blue;
       }
-      #cursors circle {
+      #cursors circle.left {
           fill: red;
       }
       text {
@@ -136,7 +136,17 @@
         </g>
 
         <g id="cursors">
-            <circle class="left" cx="35%" cy="60%" r="1%" />
+            <circle class="left" cx="35%" cy="60%" r="1%"
+                transform="translate(0,0)" />
+
+            <!-- Now we can get that translation like so:
+left_cursor = document.querySelector('#cursors circle.left')
+left_transforms = left_cursor.transform.baseVal
+left_transforms[0].matrix
+left_transforms[0].setTranslate(10,0)
+-->
+
+
             <circle class="right" cx="65%" cy="60%" r="1%" />
         </g>
 
