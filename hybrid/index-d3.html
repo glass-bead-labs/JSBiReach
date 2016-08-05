@@ -108,63 +108,12 @@
 
         map.text = map.svg.append('text')
                     .attrs({x: "50%",
-                            y: "75%", 
+                            y: "75%",
                             'font-size': 40,
                             'text-anchor': "middle",
                             fill: "white"})
                     .text("Touch anywhere to start");
 
-        // The standard d3 appraoch is something like this, but our data above
-        // is not set up well for this... data here should be a list!
-        // map.left.selectAll('circle').data(map.leftdata).enter()
-        //     .append('circle').attr('r', 40);
-        // map.svg.nodes =
-        // d3.range(100).map(function(d, i) {
-        //     return {
-        //     x: Math.random() * map.width / 2,
-        //     y: Math.random() * map.height / 2,
-        //     r: Math.random() * 10 + 3
-        //     };
-        // });
-        // map.nodes = map.svg.nodes.concat( map.canvas.nodes );
-        // var root = map.nodes[0];
-        // root.r = 0;
-        // root.fixed = true;
-        var x =
-        d3.scale.linear()
-            .domain([0, map.width])
-            .range([0, map.width]);
-        var y =
-        d3.scale.linear()
-            .domain([0, map.height])
-            .range([map.height, 0]);
-        /* PLOT */
-        // We no longer need an event loop redrawing the frame constantly...
-        // map.canvas.draw =
-        // function() {
-        //     map.canvas.clearRect(0, 0, map.width, map.height);
-        //     map.canvas.beginPath();
-        //     var i = -1, cx, cy;
-        //     while (++i < map.canvas.nodes.length) {
-        //     d = map.canvas.nodes[i];
-        //     cx = x( d.x );
-        //     cy = y( d.y );
-        //     map.canvas.moveTo(cx, cy);
-        //     map.canvas.arc(cx, cy, d.r, 0, 2 * Math.PI);
-        //     }
-        //     map.canvas.fill();
-        // };
-        // map.svg.draw =
-        // function() {
-        //     circle = map.svg.selectAll('circle')
-        //     .data(map.svg.nodes).enter()
-        //     .append('circle')
-        //         .attr('r', function(d) { return d.r; })
-        //         .attr('fill', 'blue')
-        //         .attr('transform', map.svg.transform);
-        // };
-        // map.canvas.draw();
-        //map.svg.draw();
 
       function Interactor() {
           // pointer lock event listener
@@ -175,9 +124,6 @@
                   // We never want to unbind lockChangeAlert, so we're good
                   this.lockChangeAlert.bind(this),
                   false);
-          // document.addEventListener('mozpointerlockchange', lockChangeAlert,
-          //         false);
-
 
           map.canvas.canvas.onclick = function() {
             // In the brain-melting world of JavaScript, this in a callback is
@@ -218,8 +164,7 @@
       }
       Interactor.prototype.updateMsg = function(move_event) {
           console.log(move_event);
-          this.message.textContent =
-              move_event.clientX + ',' + move_event.clientY;
+          map.text.text(move_event.movementX + ',' + move_event.movementY);
       }
 
       // For now, we keep the interactor in the global namespace so I can 
