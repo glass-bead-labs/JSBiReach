@@ -16,7 +16,18 @@
         background: gray;
       }
 
-      circle { fill: blue; /* r: 30; */ }
+      #targets circle {
+          fill: blue;
+      }
+      #cursors circle {
+          fill: red;
+      }
+      text {
+        font-size: 40pt;
+        text-anchor: middle;
+        fill: white;
+      }
+      /* These don't always work, e.g., in Firefox */
       /* Two rows top-to-bottom */
       /* .out, .home { cy: 40%; } */
       /* .forward    { cy: 20%; } */
@@ -91,7 +102,7 @@
       Interactor.prototype.updateMsg = function(move_event) {
           console.log(move_event);
           this.message.textContent =
-              move_event.clientX + ',' + move_event.clientY;
+              move_event.movementX + ',' + move_event.movementY;
       }
 
       // For now, we keep the interactor in the global namespace so I can 
@@ -110,16 +121,26 @@
         <!-- <rect width="100%" height="100%" fill="gray" /> -->
 
         <!-- Left cluster -->
-        <circle class="left forward" cx="35%" cy="20%" r="4%" />
-        <circle class="left out" cx="15%" cy="40%" r="4%" />
-        <circle class="left home" cx="35%" cy="40%" r="4%" />
-        <!-- Right cluster -->
-        <circle class="right forward" cx="65%" cy="20%" r="4%" />
-        <circle class="right out" cx="85%" cy="40%" r="4%" />
-        <circle class="right home" cx="65%" cy="40%" r="4%" />
+        <g id="targets">
+            <g id="left">
+                <circle class="left forward" cx="35%" cy="20%" r="4%" />
+                <circle class="left out" cx="15%" cy="40%" r="4%" />
+                <circle class="left home" cx="35%" cy="40%" r="4%" />
+            </g>
+            <!-- Right cluster -->
+            <g id="right">
+                <circle class="right forward" cx="65%" cy="20%" r="4%" />
+                <circle class="right out" cx="85%" cy="40%" r="4%" />
+                <circle class="right home" cx="65%" cy="40%" r="4%" />
+            </g>
+        </g>
 
-        <text id="message" x="50%" y="75%" font-size="60"
-              text-anchor="middle" fill="white">
+        <g id="cursors">
+            <circle class="left" cx="35%" cy="60%" r="1%" />
+            <circle class="right" cx="65%" cy="60%" r="1%" />
+        </g>
+
+        <text id="message" x="50%" y="75%" >
           Touch anywhere to start
         </text>
     </svg>
