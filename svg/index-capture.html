@@ -60,6 +60,9 @@
             // In the brain-melting world of JavaScript, this in a callback is
             // the thing the function was attached to... so here it's the
             // SVG
+            console.log(this);
+            // c = document.getElementById('the-canvas')
+            // c.requestPointerLock();
             this.requestPointerLock();
           };
           this.message = document.getElementById('message');
@@ -100,9 +103,17 @@
           }
       }
       Interactor.prototype.updateMsg = function(move_event) {
-          console.log(move_event);
+          // console.log(move_event);
           this.message.textContent =
               move_event.movementX + ',' + move_event.movementY;
+
+          left_cursor = document.querySelector('#cursors circle.left');
+          left_transforms = left_cursor.transform.baseVal;
+          // This is the full transform
+          // left_transforms[0].matrix;
+          // This is a little brittle...
+          left_transforms[0].setTranslate(move_event.movementX,
+                                          move_event.movementY);
       }
 
       // For now, we keep the interactor in the global namespace so I can 
@@ -140,10 +151,6 @@
                 transform="translate(0,0)" />
 
             <!-- Now we can get that translation like so:
-left_cursor = document.querySelector('#cursors circle.left')
-left_transforms = left_cursor.transform.baseVal
-left_transforms[0].matrix
-left_transforms[0].setTranslate(10,0)
 -->
 
 
