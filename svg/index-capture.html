@@ -39,7 +39,8 @@
     </style>
     <script>
       function Interactor() {
-          // pointer lock event listener
+          this.totals = {movementX: 0,
+                         movementY: 0};
 
           // Hook pointer lock state change events for different browsers
           document.addEventListener('pointerlockchange',
@@ -111,9 +112,16 @@
           left_transforms = left_cursor.transform.baseVal;
           // This is the full transform
           // left_transforms[0].matrix;
-          // This is a little brittle...
-          left_transforms[0].setTranslate(move_event.movementX,
-                                          move_event.movementY);
+
+          // JS is single-threaded (as of summer 2016). So this should be OK.
+          this.totals.movementX += move_event.movementX,
+          this.totals.movementY += move_event.movementY;
+          // TODO implement bounds checking
+
+          // This is a little brittle - but we know the first (and only)
+          // transform in the SVG is translate(0,0)
+          left_transforms[0].setTranslate(this.totals.movementX,
+                                          this.totals.movementY);
       }
 
       // For now, we keep the interactor in the global namespace so I can 
@@ -150,11 +158,8 @@
             <circle class="left" cx="35%" cy="60%" r="1%"
                 transform="translate(0,0)" />
 
-            <!-- Now we can get that translation like so:
--->
-
-
-            <circle class="right" cx="65%" cy="60%" r="1%" />
+            <circle class="right" cx="65%" cy="60%" r="1%"
+                transform="translate(0,0)" />
         </g>
 
         <text id="message" x="50%" y="75%" >
