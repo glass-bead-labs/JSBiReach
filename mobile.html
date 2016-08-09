@@ -41,15 +41,44 @@
       function Interactor() {
           this.totals = {movementX: 0,
                          movementY: 0};
+          this.ongoingTouches = new Array();
 
           // Grabbing a reference still seems like less typing than d3
           this.workspace = document.getElementById('workspace');
           this.message = document.getElementById('message');
 
+          this.cursors = [document.querySelector('#cursors circle.left'),
+                          document.querySelector('#cursors circle.right')];
+
           // We just bind in the function call, as we don't need to unbind
           // (just close the page)
-          document.addEventListener("touchstart",
-                      this.updateMsg.bind(this), false);
+          // this.workspace.addEventListener("touchstart",
+          //     this.handleStart.bind(this), false);
+          // this.workspace.addEventListener("touchend",
+          //     this.handleEnd, false);
+          // this.workspace.addEventListener("touchcancel",
+          //     this.handleCancel, false);
+          this.workspace.addEventListener("touchmove",
+              this.handleMove.bind(this), false);
+      }
+      Interactor.prototype.handleStart = function (evt) {
+          // Keep track of start location to do relative moves.
+      }
+      Interactor.prototype.handleMove = function (evt) {
+          evt.preventDefault();
+          console.log("touchmove");
+          var touches = evt.changedTouches;
+
+          for (var i = 0; i < touches.length; i++) {
+              console.log("touchmove:" + i + "...");
+              this.ongoingTouches.push(copyTouch(touches[i]));
+
+              // Update cursor to actual touch location for now
+              this.cursors[i].setAttribute('cx', touches[i].pageX);
+              this.cursors[i].setAttribute('cy', touches[i].pageY);
+
+              console.log("finished touchmove:" + i + ".");
+          }
       }
       Interactor.prototype.updateMsg = function(touch_event) {
           console.log('got touch event');
@@ -57,20 +86,13 @@
           this.message.textContent = 'Got touch event';
           //     move_event.movementX + ',' + move_event.movementY;
 
-          left_cursor = document.querySelector('#cursors circle.left');
-          left_transforms = left_cursor.transform.baseVal;
-          // This is the full transform
-          // left_transforms[0].matrix;
 
-          // JS is single-threaded (as of summer 2016). So this should be OK.
-          // this.totals.movementX += move_event.movementX,
-          // this.totals.movementY += move_event.movementY;
-          // TODO implement bounds checking
+      }
 
-          // This is a little brittle - but we know the first (and only)
-          // transform in the SVG is translate(0,0)
-          left_transforms[0].setTranslate(this.totals.movementX,
-                                          this.totals.movementY);
+      // Utility function to guard against browser mutation of touch events
+      function copyTouch(touch) {
+          return { identifier: touch.identifier, pageX: touch.pageX, 
+              pageY: touch.pageY };
       }
 
       // For now, we keep the interactor in the global namespace so I can 
