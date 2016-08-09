@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>SVG tutorial</title>
+
+    <style type="text/css">
+      svg {
+        display: block;
+        border: 1px solid #ccc;
+        position: absolute;
+        top:  5%;
+        left: 5%;
+        width:  90%;
+        height: 90%;
+        background: gray;
+      }
+
+      #targets circle {
+          fill: blue;
+      }
+      #cursors circle.left {
+          fill: red;
+      }
+      text {
+        font-size: 40pt;
+        text-anchor: middle;
+        fill: white;
+      }
+      /* These don't always work, e.g., in Firefox */
+      /* Two rows top-to-bottom */
+      /* .out, .home { cy: 40%; } */
+      /* .forward    { cy: 20%; } */
+      /* Four columsn left-to-right */
+      /* .left.out  { cx: 15%; } */
+      /* .left      { cx: 35%; } */
+      /* .right     { cx: 65%; } */
+      /* .right.out { cx: 85%; } */
+    </style>
+    <script>
+      function Interactor() {
+          this.totals = {movementX: 0,
+                         movementY: 0};
+
+          // Grabbing a reference still seems like less typing than d3
+          this.workspace = document.getElementById('workspace');
+          this.message = document.getElementById('message');
+
+          // We just bind in the function call, as we don't need to unbind
+          // (just close the page)
+          document.addEventListener("touchstart",
+                      this.updateMsg.bind(this), false);
+      }
+      Interactor.prototype.updateMsg = function(touch_event) {
+          console.log('got touch event');
+          console.log(touch_event);
+          this.message.textContent = 'Got touch event';
+          //     move_event.movementX + ',' + move_event.movementY;
+
+          left_cursor = document.querySelector('#cursors circle.left');
+          left_transforms = left_cursor.transform.baseVal;
+          // This is the full transform
+          // left_transforms[0].matrix;
+
+          // JS is single-threaded (as of summer 2016). So this should be OK.
+          // this.totals.movementX += move_event.movementX,
+          // this.totals.movementY += move_event.movementY;
+          // TODO implement bounds checking
+
+          // This is a little brittle - but we know the first (and only)
+          // transform in the SVG is translate(0,0)
+          left_transforms[0].setTranslate(this.totals.movementX,
+                                          this.totals.movementY);
+      }
+
+      // For now, we keep the interactor in the global namespace so I can 
+      // debug it more easily
+      function init() {
+          interact = new Interactor();
+      }
+    </script>
+  </head>
+  <body onload="init()">
+    <svg id="workspace"
+         version="1.1"
+         baseProfile="full"
+         xmlns="http://www.w3.org/2000/svg">
+
+        <!-- <rect width="100%" height="100%" fill="gray" /> -->
+
+        <!-- Left cluster -->
+        <g id="targets">
+            <g id="left">
+                <circle class="left forward" cx="35%" cy="20%" r="4%" />
+                <circle class="left out" cx="15%" cy="40%" r="4%" />
+                <circle class="left home" cx="35%" cy="40%" r="4%" />
+            </g>
+            <!-- Right cluster -->
+            <g id="right">
+                <circle class="right forward" cx="65%" cy="20%" r="4%" />
+                <circle class="right out" cx="85%" cy="40%" r="4%" />
+                <circle class="right home" cx="65%" cy="40%" r="4%" />
+            </g>
+        </g>
+
+        <g id="cursors">
+            <circle class="left" cx="35%" cy="60%" r="1%"
+                transform="translate(0,0)" />
+
+            <circle class="right" cx="65%" cy="60%" r="1%"
+                transform="translate(0,0)" />
+        </g>
+
+        <text id="message" x="50%" y="75%" >
+          Touch anywhere to start
+        </text>
+    </svg>
+  </body>
+</html>
