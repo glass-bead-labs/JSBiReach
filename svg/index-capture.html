@@ -62,9 +62,10 @@
             // the thing the function was attached to... so here it's the
             // SVG
             console.log(this);
-            // c = document.getElementById('the-canvas')
-            // c.requestPointerLock();
+            message = document.getElementById('message');
+            message.textContent = 'Requesting Pointer Lock';
             this.requestPointerLock();
+            message.textContent = 'Requested Pointer Lock';
           };
           this.message = document.getElementById('message');
 
