@@ -91,22 +91,27 @@
           // Update whether we're listening to mousemove or not
           if(document.pointerLockElement === this.workspace) {
               console.log('The pointer lock status is now locked');
-              document.addEventListener("mousemove",
+              document.addEventListener("touchstart",
                       this.boundUpdate, false);
+              // document.addEventListener("mousemove",
+              //         this.boundUpdate, false);
           }
           else if(document.pointerLockElement === null) {
               console.log('The pointer lock status is now unlocked');
-              document.removeEventListener("mousemove", this.boundUpdate,
-                      false);
+              document.removeEventListener("touchstart",
+                      this.boundUpdate, false);
+              // document.removeEventListener("mousemove", this.boundUpdate,
+              //         false);
           }
           else {
               console.log('Pointer lock on:', document.pointerLockElement);
           }
       }
       Interactor.prototype.updateMsg = function(move_event) {
-          // console.log(move_event);
-          this.message.textContent =
-              move_event.movementX + ',' + move_event.movementY;
+          console.log('got move event');
+          console.log(move_event);
+          this.message.textContent = 'Got move event';
+          //     move_event.movementX + ',' + move_event.movementY;
 
           left_cursor = document.querySelector('#cursors circle.left');
           left_transforms = left_cursor.transform.baseVal;
@@ -114,8 +119,8 @@
           // left_transforms[0].matrix;
 
           // JS is single-threaded (as of summer 2016). So this should be OK.
-          this.totals.movementX += move_event.movementX,
-          this.totals.movementY += move_event.movementY;
+          // this.totals.movementX += move_event.movementX,
+          // this.totals.movementY += move_event.movementY;
           // TODO implement bounds checking
 
           // This is a little brittle - but we know the first (and only)
