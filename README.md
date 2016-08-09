@@ -5,3 +5,7 @@ src="https://raw.githubusercontent.com/ZenHubIO/support/master/zenhub-badge.png"
 
 Some experiments in allowing multitouch psychophysics, with an initial
 focus on doing bimanual reaching on the web.
+
+Turns out a lot of things don't translate, so I'm shifting focus to doing a
+mobile version first (which should more straight-forwardly support
+multi-touch).
